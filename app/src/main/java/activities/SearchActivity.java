@@ -1,7 +1,8 @@
-package com.zackhsi.imagesearch.activities;
+package activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,11 +13,19 @@ import android.widget.Toast;
 
 import com.zackhsi.imagesearch.R;
 
+import models.ImageResponse;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import services.ImageService;
+
 
 public class SearchActivity extends ActionBarActivity {
     EditText etQuery;
     Button btnSearch;
     GridView gvResults;
+    ImageService api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +33,16 @@ public class SearchActivity extends ActionBarActivity {
         setContentView(R.layout.activity_search);
 
         findViews();
+        setupApi();
         setupHandlers();
+    }
+
+    private void setupApi() {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("https://ajax.googleapis.com/ajax/services/search")
+                .build();
+
+        api = restAdapter.create(ImageService.class);
     }
 
     private void findViews() {
@@ -37,7 +55,17 @@ public class SearchActivity extends ActionBarActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getBaseContext(), "Search query: " + etQuery.getText().toString(), Toast.LENGTH_SHORT).show();
+                api.getImages("1.0", etQuery.getText().toString(), new Callback<ImageResponse>() {
+                    @Override
+                    public void success(ImageResponse imageResponse, Response response) {
+                        Log.i("DEBUG", "success");
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.i("DEBUG", "failure");
+                    }
+                });
             }
         });
     }
