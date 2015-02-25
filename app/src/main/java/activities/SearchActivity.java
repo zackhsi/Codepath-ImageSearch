@@ -9,10 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.zackhsi.imagesearch.R;
 
+import java.util.ArrayList;
+
+import adapters.ImageResultsAdapter;
+import models.GoogleImage;
 import models.ImageResponse;
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -26,15 +29,30 @@ public class SearchActivity extends ActionBarActivity {
     Button btnSearch;
     GridView gvResults;
     ImageService api;
+    ArrayList<GoogleImage> images;
+    ImageResultsAdapter aImageResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        findViews();
+        initMemberVars();
+        setupViews();
         setupApi();
         setupHandlers();
+    }
+
+    private void initMemberVars() {
+        images = new ArrayList<>();
+        aImageResults = new ImageResultsAdapter(this, images);
+    }
+
+    private void setupViews() {
+        etQuery = (EditText) findViewById(R.id.etQuery);
+        btnSearch = (Button) findViewById(R.id.btnSearch);
+        gvResults = (GridView) findViewById(R.id.gvResults);
+        gvResults.setAdapter(aImageResults);
     }
 
     private void setupApi() {
@@ -45,12 +63,6 @@ public class SearchActivity extends ActionBarActivity {
         api = restAdapter.create(ImageService.class);
     }
 
-    private void findViews() {
-        etQuery = (EditText) findViewById(R.id.etQuery);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
-        gvResults = (GridView) findViewById(R.id.gvResults);
-    }
-
     private void setupHandlers() {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +70,8 @@ public class SearchActivity extends ActionBarActivity {
                 api.getImages("1.0", etQuery.getText().toString(), new Callback<ImageResponse>() {
                     @Override
                     public void success(ImageResponse imageResponse, Response response) {
-                        Log.i("DEBUG", "success");
+                        images.addAll(imageResponse.responseData.results);
+                        aImageResults.notifyDataSetChanged();
                     }
 
                     @Override
