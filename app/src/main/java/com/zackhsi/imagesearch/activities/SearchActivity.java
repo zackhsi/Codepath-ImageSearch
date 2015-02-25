@@ -1,4 +1,4 @@
-package com.zackhsi.imagesearch;
+package com.zackhsi.imagesearch.activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
+
+import com.zackhsi.imagesearch.R;
 
 
 public class SearchActivity extends ActionBarActivity {
