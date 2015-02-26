@@ -15,5 +15,5 @@ import retrofit.http.Query;
  */
 public interface ImageService {
     @GET("/images")
-    void getImages(@Query("v") String version, @Query("q") String query, Callback<ImageResponse> callback);
+    void getImages(@Query("v") String version, @Query("rsz") int resultSize, @Query("q") String query, Callback<ImageResponse> callback);
 }

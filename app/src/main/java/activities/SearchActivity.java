@@ -68,7 +68,7 @@ public class SearchActivity extends ActionBarActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                api.getImages("1.0", etQuery.getText().toString(), new Callback<ImageResponse>() {
+                api.getImages("1.0", 8, etQuery.getText().toString(), new Callback<ImageResponse>() {
                     @Override
                     public void success(ImageResponse imageResponse, Response response) {
                         images.addAll(imageResponse.responseData.results);
