@@ -1,9 +1,14 @@
 package adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+import com.zackhsi.imagesearch.R;
 
 import java.util.List;
 
@@ -14,11 +19,17 @@ import models.GoogleImage;
  */
 public class ImageResultsAdapter extends ArrayAdapter<GoogleImage> {
     public ImageResultsAdapter(Context context, List<GoogleImage> images) {
-        super(context, android.R.layout.simple_list_item_1, images);
+        super(context, R.layout.item_image_result, images);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return super.getView(position, convertView, parent);
+        GoogleImage image = getItem(position);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_image_result, parent, false);
+        }
+        ImageView ivImageResult = (ImageView) convertView.findViewById(R.id.ivImageResult);
+        Picasso.with(getContext()).load(image.tbUrl).into(ivImageResult);
+        return convertView;
     }
 }

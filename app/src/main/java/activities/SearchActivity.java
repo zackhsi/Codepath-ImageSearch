@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 
+import com.etsy.android.grid.StaggeredGridView;
 import com.zackhsi.imagesearch.R;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import services.ImageService;
 public class SearchActivity extends ActionBarActivity {
     EditText etQuery;
     Button btnSearch;
-    GridView gvResults;
+    StaggeredGridView gvResults;
     ImageService api;
     ArrayList<GoogleImage> images;
     ImageResultsAdapter aImageResults;
@@ -51,7 +52,7 @@ public class SearchActivity extends ActionBarActivity {
     private void setupViews() {
         etQuery = (EditText) findViewById(R.id.etQuery);
         btnSearch = (Button) findViewById(R.id.btnSearch);
-        gvResults = (GridView) findViewById(R.id.gvResults);
+        gvResults = (StaggeredGridView) findViewById(R.id.gvResults);
         gvResults.setAdapter(aImageResults);
     }
 
