@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import adapters.ImageResultsAdapter;
 import models.GoogleImage;
 import models.ImageResponse;
+import models.Settings;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -32,8 +33,10 @@ public class SearchActivity extends ActionBarActivity {
     Button btnSearch;
     StaggeredGridView gvResults;
     ImageService api;
-    ArrayList<GoogleImage> images;
     ImageResultsAdapter aImageResults;
+
+    ArrayList<GoogleImage> images;
+    Settings settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class SearchActivity extends ActionBarActivity {
     private void initMemberVars() {
         images = new ArrayList<>();
         aImageResults = new ImageResultsAdapter(this, images);
+        settings = new Settings();
     }
 
     private void setupViews() {
@@ -111,6 +115,7 @@ public class SearchActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent i = new Intent(this, SettingsActivity.class);
+            i.putExtra("settings", settings);
             startActivity(i);
             return true;
         }

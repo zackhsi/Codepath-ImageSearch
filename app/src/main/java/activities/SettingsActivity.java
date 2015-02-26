@@ -7,13 +7,19 @@ import android.view.MenuItem;
 
 import com.zackhsi.imagesearch.R;
 
+import models.Settings;
+
 
 public class SettingsActivity extends ActionBarActivity {
+
+    private Settings settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        settings = (Settings) getIntent().getSerializableExtra("settings");
     }
 
 
