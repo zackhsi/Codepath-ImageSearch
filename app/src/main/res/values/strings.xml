@@ -11,4 +11,5 @@
     <string name="color">Color filter (black, blue, etc...)</string>
     <string name="type">Type (faces, photo, clip art, line art)</string>
     <string name="site">Site (espn.com)</string>
+    <string name="save">Save</string>
 </resources>

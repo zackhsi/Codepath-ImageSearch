@@ -29,6 +29,8 @@ import services.ImageService;
 
 
 public class SearchActivity extends ActionBarActivity {
+    private static final int SETTINGS_REQUEST_CODE = 0;
+
     EditText etQuery;
     Button btnSearch;
     StaggeredGridView gvResults;
@@ -93,9 +95,18 @@ public class SearchActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(SearchActivity.this, ImageDetailActivity.class);
                 i.putExtra("image", images.get(position));
-                startActivity(i);
+                startActivityForResult(i, SETTINGS_REQUEST_CODE);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SETTINGS_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                settings = (Settings) data.getSerializableExtra("settings");
+            }
+        }
     }
 
     @Override
@@ -116,7 +127,7 @@ public class SearchActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             Intent i = new Intent(this, SettingsActivity.class);
             i.putExtra("settings", settings);
-            startActivity(i);
+            startActivityForResult(i, SETTINGS_REQUEST_CODE);
             return true;
         }
 
