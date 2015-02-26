@@ -18,6 +18,7 @@ import com.zackhsi.imagesearch.R;
 import java.util.ArrayList;
 
 import adapters.ImageResultsAdapter;
+import helpers.InfiniteScrollListener;
 import models.GoogleImage;
 import models.ImageResponse;
 import models.Settings;
@@ -62,6 +63,35 @@ public class SearchActivity extends ActionBarActivity {
         btnSearch = (Button) findViewById(R.id.btnSearch);
         gvResults = (StaggeredGridView) findViewById(R.id.gvResults);
         gvResults.setAdapter(aImageResults);
+        gvResults.setOnScrollListener(new InfiniteScrollListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                loadMoreImages(page);
+            }
+        });
+    }
+
+    private void loadMoreImages(int page) {
+        api.getImages("1.0", 8,
+                settings.size,
+                settings.color,
+                settings.type,
+                settings.site,
+                page * 8,
+                etQuery.getText().toString(),
+                new Callback<ImageResponse>() {
+                    @Override
+                    public void success(ImageResponse imageResponse, Response response) {
+                        if (imageResponse.responseData != null) {
+                            aImageResults.addAll(imageResponse.responseData.results);
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.i("DEBUG", "failure");
+                    }
+                });
     }
 
     private void setupApi() {
@@ -81,6 +111,7 @@ public class SearchActivity extends ActionBarActivity {
                         settings.color,
                         settings.type,
                         settings.site,
+                        0,
                         etQuery.getText().toString(),
                         new Callback<ImageResponse>() {
                     @Override
