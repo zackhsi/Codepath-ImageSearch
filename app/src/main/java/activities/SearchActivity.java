@@ -85,8 +85,8 @@ public class SearchActivity extends ActionBarActivity {
                         new Callback<ImageResponse>() {
                     @Override
                     public void success(ImageResponse imageResponse, Response response) {
-                        images.addAll(imageResponse.responseData.results);
-                        aImageResults.notifyDataSetChanged();
+                        aImageResults.clear();
+                        aImageResults.addAll(imageResponse.responseData.results);
                     }
 
                     @Override
