@@ -21,6 +21,7 @@ import adapters.ImageResultsAdapter;
 import helpers.InfiniteScrollListener;
 import models.GoogleImage;
 import models.ImageResponse;
+import models.ResultCursor;
 import models.Settings;
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -31,14 +32,16 @@ import services.ImageService;
 
 public class SearchActivity extends ActionBarActivity {
     private static final int SETTINGS_REQUEST_CODE = 0;
+    private static final int RESULT_SIZE = 8;
 
     EditText etQuery;
     Button btnSearch;
     StaggeredGridView gvResults;
     ImageService api;
-    ImageResultsAdapter aImageResults;
 
     ArrayList<GoogleImage> images;
+    ImageResultsAdapter aImageResults;
+    ResultCursor cursor;
     Settings settings;
 
     @Override
@@ -55,6 +58,7 @@ public class SearchActivity extends ActionBarActivity {
     private void initMemberVars() {
         images = new ArrayList<>();
         aImageResults = new ImageResultsAdapter(this, images);
+        cursor = new ResultCursor();
         settings = new Settings();
     }
 
@@ -72,26 +76,30 @@ public class SearchActivity extends ActionBarActivity {
     }
 
     private void loadMoreImages(int page) {
-        api.getImages("1.0", 8,
-                settings.size,
-                settings.color,
-                settings.type,
-                settings.site,
-                page * 8,
-                etQuery.getText().toString(),
-                new Callback<ImageResponse>() {
-                    @Override
-                    public void success(ImageResponse imageResponse, Response response) {
-                        if (imageResponse.responseData != null) {
-                            aImageResults.addAll(imageResponse.responseData.results);
+        int nextPage = cursor.currentPageIndex + 1;
+        if (nextPage  < cursor.pages.size()) {
+            api.getImages("1.0", RESULT_SIZE,
+                    settings.size,
+                    settings.color,
+                    settings.type,
+                    settings.site,
+                    nextPage * RESULT_SIZE,
+                    etQuery.getText().toString(),
+                    new Callback<ImageResponse>() {
+                        @Override
+                        public void success(ImageResponse imageResponse, Response response) {
+                            if (imageResponse.responseData != null) {
+                                aImageResults.addAll(imageResponse.responseData.results);
+                            }
+                            cursor = imageResponse.responseData.cursor;
                         }
-                    }
 
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Log.i("DEBUG", "failure");
-                    }
-                });
+                        @Override
+                        public void failure(RetrofitError error) {
+                            Log.i("DEBUG", "failure");
+                        }
+                    });
+        }
     }
 
     private void setupApi() {
@@ -118,6 +126,7 @@ public class SearchActivity extends ActionBarActivity {
                     public void success(ImageResponse imageResponse, Response response) {
                         aImageResults.clear();
                         aImageResults.addAll(imageResponse.responseData.results);
+                        cursor = imageResponse.responseData.cursor;
                     }
 
                     @Override
