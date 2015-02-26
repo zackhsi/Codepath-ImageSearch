@@ -1,11 +1,13 @@
 package activities;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -80,6 +82,14 @@ public class SearchActivity extends ActionBarActivity {
                         Log.i("DEBUG", "failure");
                     }
                 });
+            }
+        });
+        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(SearchActivity.this, ImageDetailActivity.class);
+                i.putExtra("image", images.get(position));
+                startActivity(i);
             }
         });
     }
