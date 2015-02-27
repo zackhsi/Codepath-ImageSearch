@@ -1,16 +1,15 @@
 package activities;
 
 import android.content.Intent;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.zackhsi.imagesearch.R;
@@ -34,15 +33,16 @@ public class SearchActivity extends ActionBarActivity {
     private static final int SETTINGS_REQUEST_CODE = 0;
     private static final int RESULT_SIZE = 8;
 
-    EditText etQuery;
-    Button btnSearch;
     StaggeredGridView gvResults;
     ImageService api;
 
+    String query;
     ArrayList<GoogleImage> images;
     ImageResultsAdapter aImageResults;
     ResultCursor cursor;
     Settings settings;
+    int currentPage;
+    boolean isFetching;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +60,11 @@ public class SearchActivity extends ActionBarActivity {
         aImageResults = new ImageResultsAdapter(this, images);
         cursor = new ResultCursor();
         settings = new Settings();
+        currentPage = 0;
+        isFetching = false;
     }
 
     private void setupViews() {
-        etQuery = (EditText) findViewById(R.id.etQuery);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
         gvResults = (StaggeredGridView) findViewById(R.id.gvResults);
         gvResults.setAdapter(aImageResults);
         gvResults.setOnScrollListener(new InfiniteScrollListener() {
@@ -78,27 +78,7 @@ public class SearchActivity extends ActionBarActivity {
     private void loadMoreImages(int page) {
         int nextPage = cursor.currentPageIndex + 1;
         if (nextPage  < cursor.pages.size()) {
-            api.getImages("1.0", RESULT_SIZE,
-                    settings.size,
-                    settings.color,
-                    settings.type,
-                    settings.site,
-                    nextPage * RESULT_SIZE,
-                    etQuery.getText().toString(),
-                    new Callback<ImageResponse>() {
-                        @Override
-                        public void success(ImageResponse imageResponse, Response response) {
-                            if (imageResponse.responseData != null) {
-                                aImageResults.addAll(imageResponse.responseData.results);
-                            }
-                            cursor = imageResponse.responseData.cursor;
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            Log.i("DEBUG", "failure");
-                        }
-                    });
+            fetchImages(false);
         }
     }
 
@@ -111,31 +91,6 @@ public class SearchActivity extends ActionBarActivity {
     }
 
     private void setupHandlers() {
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                api.getImages("1.0", 8,
-                        settings.size,
-                        settings.color,
-                        settings.type,
-                        settings.site,
-                        0,
-                        etQuery.getText().toString(),
-                        new Callback<ImageResponse>() {
-                    @Override
-                    public void success(ImageResponse imageResponse, Response response) {
-                        aImageResults.clear();
-                        aImageResults.addAll(imageResponse.responseData.results);
-                        cursor = imageResponse.responseData.cursor;
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Log.i("DEBUG", "failure");
-                    }
-                });
-            }
-        });
         gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -144,6 +99,42 @@ public class SearchActivity extends ActionBarActivity {
                 startActivityForResult(i, SETTINGS_REQUEST_CODE);
             }
         });
+    }
+
+    private void fetchImages(final boolean clear) {
+        if (isFetching) {
+            return;
+        }
+
+        if (clear) {
+            aImageResults.clear();
+            currentPage = 0;
+        }
+
+        Log.i("FETCH", "Fetching page=" + currentPage);
+
+        isFetching = true;
+        api.getImages("1.0", RESULT_SIZE,
+                settings.size,
+                settings.color,
+                settings.type,
+                settings.site,
+                currentPage * RESULT_SIZE,
+                query,
+                new Callback<ImageResponse>() {
+                    @Override
+                    public void success(ImageResponse imageResponse, Response response) {
+                        aImageResults.addAll(imageResponse.responseData.results);
+                        cursor = imageResponse.responseData.cursor;
+                        currentPage++;
+                        isFetching = false;
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        isFetching = false;
+                    }
+                });
     }
 
     @Override
@@ -159,7 +150,23 @@ public class SearchActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
-        return true;
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                SearchActivity.this.query = query;
+                fetchImages(true);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+
     }
 
     @Override
