@@ -50,9 +50,9 @@ public class SettingsActivity extends ActionBarActivity {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settings.size = sSize.getSelectedItem().toString();
-                settings.color = sColor.getSelectedItem().toString();
-                settings.type = sType.getSelectedItem().toString();
+                settings.size = sSize.getSelectedItemPosition() > 0 ? sSize.getSelectedItem().toString() : null;
+                settings.color = sColor.getSelectedItemPosition() > 0 ? sColor.getSelectedItem().toString() : null;
+                settings.type = sType.getSelectedItemPosition() > 0 ? sType.getSelectedItem().toString() : null;
                 settings.site = etSite.getText().toString();
 
                 Intent i = new Intent();
