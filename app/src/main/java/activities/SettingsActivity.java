@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import com.zackhsi.imagesearch.R;
 
@@ -18,9 +20,9 @@ public class SettingsActivity extends ActionBarActivity {
 
     private Settings settings;
 
-    private EditText etSize;
-    private EditText etColor;
-    private EditText etType;
+    private Spinner sSize;
+    private Spinner sColor;
+    private Spinner sType;
     private EditText etSite;
     private Button btnSubmit;
 
@@ -34,23 +36,23 @@ public class SettingsActivity extends ActionBarActivity {
     }
 
     private void setupViews() {
-        etSize = (EditText) findViewById(R.id.etSize);
-        etColor = (EditText) findViewById(R.id.etColor);
-        etType = (EditText) findViewById(R.id.etType);
+        sSize = (Spinner) findViewById(R.id.sSize);
+        sColor = (Spinner) findViewById(R.id.sColor);
+        sType = (Spinner) findViewById(R.id.sType);
         etSite = (EditText) findViewById(R.id.etSite);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
 
-        etSize.setText(settings.size);
-        etColor.setText(settings.color);
-        etType.setText(settings.type);
+        setSpinnerToValue(sSize, settings.size);
+        setSpinnerToValue(sColor, settings.color);
+        setSpinnerToValue(sType, settings.type);
         etSite.setText(settings.site);
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settings.size = etSize.getText().toString();
-                settings.color = etColor.getText().toString();
-                settings.type = etType.getText().toString();
+                settings.size = sSize.getSelectedItemPosition() > 0 ? sSize.getSelectedItem().toString() : null;
+                settings.color = sColor.getSelectedItemPosition() > 0 ? sColor.getSelectedItem().toString() : null;
+                settings.type = sType.getSelectedItemPosition() > 0 ? sType.getSelectedItem().toString() : null;
                 settings.site = etSite.getText().toString();
 
                 Intent i = new Intent();
@@ -59,6 +61,18 @@ public class SettingsActivity extends ActionBarActivity {
                 finish();
             }
         });
+    }
+
+    private void setSpinnerToValue(Spinner spinner, String value) {
+        int index = 0;
+        SpinnerAdapter adapter = spinner.getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).equals(value)) {
+                index = i;
+                break; // terminate loop
+            }
+        }
+        spinner.setSelection(index);
     }
 
     @Override

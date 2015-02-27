@@ -3,49 +3,56 @@
     android:layout_height="match_parent"
     tools:context="activities.SettingsActivity">
 
-    <EditText
+    <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/etSize"
+        android:id="@+id/sSize"
+        android:entries="@array/sizes_array"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:hint="@string/size"
+        android:hint="@string/sizes_prompt"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:spinnerMode="dialog"
+        android:prompt="@string/sizes_prompt" />
 
-    <EditText
+    <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/etColor"
-        android:hint="@string/color"
-        android:layout_below="@+id/etSize"
+        android:id="@+id/sColor"
+        android:entries="@array/colors_array"
+        android:layout_below="@+id/sSize"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:spinnerMode="dialog"
+        android:prompt="@string/colors_prompt" />
 
-    <EditText
+    <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/etType"
-        android:hint="@string/type"
-        android:layout_below="@+id/etColor"
+        android:id="@+id/sType"
+        android:entries="@array/types_array"
+        android:layout_below="@+id/sColor"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/etColor"
-        android:layout_alignEnd="@+id/etColor" />
+        android:layout_alignRight="@+id/sColor"
+        android:layout_alignEnd="@+id/sColor"
+        android:spinnerMode="dialog"
+        android:prompt="@string/types_prompt" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/etSite"
         android:hint="@string/site"
-        android:layout_below="@+id/etType"
+        android:layout_below="@+id/sType"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/etType"
-        android:layout_alignEnd="@+id/etType" />
+        android:layout_alignRight="@+id/sType"
+        android:layout_alignEnd="@+id/sType" />
 
     <Button
         android:layout_width="wrap_content"
